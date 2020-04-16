@@ -23,18 +23,44 @@ init_git(){
     gitcmd=$(grep "git clone" < tmp)
     gitcmd="${gitcmd[*]/*git clone/git clone}"
     gitcmd="${gitcmd[*]/john.smith/${login}}"
-    # eval "${gitcmd}"
     ${gitcmd}
 }
 
-link=http://www.debug-pro.com/epita/prog/s4/$(wget -qO- http://www.debug-pro.com/epita/prog/s4/ | grep "pw_0$1" | sed 's/^[^\"]*\"//g' | sed 's/\"[^\"]*$//')
-title=${link[*]//*pw\//}
-title=${title[*]//\/index.html}
-get_user_info
-wget -qO- "${link}" > tmp
-init_git
-cd "tp0$1-${login}" || exit 1
-mkdir "${title}"
-make_authors "${title}/"
+setup(){
+    get_user_info
+    link=http://www.debug-pro.com/epita/prog/s4/$(wget -qO- http://www.debug-pro.com/epita/prog/s4/ | grep "pw_0$1" | sed 's/^[^\"]*\"//g' | sed 's/\"[^\"]*$//')
+    title=${link[*]//*pw\//}
+    title=${title[*]//\/index.html}
+    wget -qO- "${link}" > tmp
+    init_git
+    cd "tp0$1-${login}" || exit 1
+    mkdir "${title}"
+    make_authors "${title}/"
+}
 
+print_help_basic(){
+    echo "usage: initpw [OPTIONS] [number]"
+}
 
+parse_args(){
+    for i in "$@"
+    do
+        case $i in
+            -h)
+                print_help_basic
+                exit 0
+                shift
+                ;;
+            --help)
+                print_help_full
+                exit 0
+                shift
+                ;;
+            *)
+                ;;
+        esac
+    done
+}
+
+parse_args "$@"
+setup "$1"
