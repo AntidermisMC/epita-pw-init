@@ -2,7 +2,6 @@
 
 get_user_info(){
     if test -f "${HOME}/.initpwconf" ; then
-        echo "We're fine !!!"
         name=$(sed -n '1p' "${HOME}/.initpwconf")
         family_name=$(sed -n '2p' "${HOME}/.initpwconf")
         login=$(echo "${name}.${family_name}" | sed 's/\(.*\)/\L\1/')
@@ -42,6 +41,11 @@ print_help_basic(){
     echo "usage: initpw [OPTIONS] [number]"
 }
 
+edit_config_file() {
+    echo "${1}
+${2}" > "${HOME}/.initpwconf"
+}
+
 parse_args(){
     for i in "$@"
     do
@@ -56,7 +60,22 @@ parse_args(){
                 exit 0
                 shift
                 ;;
+            -l=*)
+                family_name="${i#*\.}"
+                name="${i#-n}"
+                shift
+                ;;
+            -L=*)
+                name="${i#-L=}"
+                name="${name%\.*}"
+                family_name="${i#*\.}"
+                edit_config_file "${name}" "${family_name}"
+                shift
+                ;;
             *)
+                echo "Invalid argument"
+                exit 1
+                shift
                 ;;
         esac
     done
