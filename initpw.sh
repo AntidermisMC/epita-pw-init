@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+CFG_FILE=".initpwconf"
+
 get_user_info(){
-    if test -f "${HOME}/.initpwconf" ; then
-        name=$(sed -n '1p' "${HOME}/.initpwconf")
-        family_name=$(sed -n '2p' "${HOME}/.initpwconf")
+    if test -f "${HOME}/${CFG_FILE}" ; then
+        name=$(sed -n '1p' "${HOME}/${CFG_FILE}")
+        family_name=$(sed -n '2p' "${HOME}/${CFG_FILE}")
         login=$(echo "${name}.${family_name}" | sed 's/\(.*\)/\L\1/')
     elif 1 ; then
         echo "File doesn't exist."
@@ -26,7 +28,9 @@ init_git(){
 }
 
 setup(){
-    get_user_info
+    if "${name}" = "" ; then
+        get_user_info
+    fi
     link=http://www.debug-pro.com/epita/prog/s4/$(wget -qO- http://www.debug-pro.com/epita/prog/s4/ | grep "pw_0$1" | sed 's/^[^\"]*\"//g' | sed 's/\"[^\"]*$//')
     title=${link[*]//*pw\//}
     title=${title[*]//\/index.html}
@@ -38,12 +42,22 @@ setup(){
 }
 
 print_help_basic(){
-    echo "usage: initpw [OPTIONS] [number]"
+    echo "usage: initpw [OPTIONS] number"
+}
+
+print_help_full(){
+    echo "Automatically creates files for your practicals."
+    print_help_basic
+    echo "Options:
+-h: print reduced help and exit
+--help: print this message and exit
+-l=NAME.FAMILY_NAME: uses this name only for this time (changes not saved). Please do use capital letters when needed.
+-L=NAME.FAMILY_NAME: uses this name and saves it.Please do use capital letters when needed."
 }
 
 edit_config_file() {
     echo "${1}
-${2}" > "${HOME}/.initpwconf"
+${2}" > "${HOME}/${CFG_FILE}"
 }
 
 parse_args(){
