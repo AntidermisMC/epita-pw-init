@@ -48,7 +48,8 @@ print_help_basic(){
 print_help_full(){
     echo "Automatically creates files for your practicals."
     print_help_basic
-    echo "Options:
+    echo "number = number of the practical you wish to clone.
+Options:
 -h: print reduced help and exit
 --help: print this message and exit
 -l=NAME.FAMILY_NAME: uses this name only for this time (changes not saved). Please do use capital letters when needed.
