@@ -28,7 +28,7 @@ init_git(){
 }
 
 setup(){
-    if "${name}" = "" ; then
+    if [ "${name}" = "" ] ; then
         get_user_info
     fi
     link=http://www.debug-pro.com/epita/prog/s4/$(wget -qO- http://www.debug-pro.com/epita/prog/s4/ | grep "pw_0$1" | sed 's/^[^\"]*\"//g' | sed 's/\"[^\"]*$//')
@@ -88,7 +88,7 @@ parse_args(){
                 shift
                 ;;
             *)
-                echo "Invalid argument"
+                setup "${i}"
                 exit 1
                 shift
                 ;;
@@ -97,4 +97,3 @@ parse_args(){
 }
 
 parse_args "$@"
-setup "$1"
